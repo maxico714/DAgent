@@ -19,7 +19,7 @@ An autonomous, self-contained agentic notebook designed to run seamlessly inside
 ├── DAgent.ipynb # Main Colab interactive notebook └── README.md # Project documentation
 
 
-All execution artifacts, workspace logs, and snapshots are persistently stored under a customizable drive workspace (default: `/content/drive/MyDrive/KernelAgent`).
+All execution artifacts, workspace logs, and snapshots are persistently stored under a customizable drive workspace (default: `/content/drive/MyDrive/DAgent`).
 
 ## 🛠️ Getting Started
 
@@ -34,7 +34,7 @@ Ensure you have configured your secrets in the Colab Secrets Panel (🔑 icon on
 
 1. Run the cells sequentially from top to bottom.
 2. When prompted, perform the **Approval System Smoke Test** to verify that your JS-to-Python callback is functioning.
-3. Scroll to the bottom and use the interactive **KernelAgent Chat Box** to instruct the agent to execute complex tasks autonomously.
+3. Scroll to the bottom and use the interactive **DAgent Chat Box** to instruct the agent to execute complex tasks autonomously.
 
 ## 🛡️ Permission Modes
 
