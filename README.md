@@ -36,6 +36,34 @@ Ensure you have configured your secrets in the Colab Secrets Panel (🔑 icon on
 2. When prompted, perform the **Approval System Smoke Test** to verify that your JS-to-Python callback is functioning.
 3. Scroll to the bottom and use the interactive **DAgent Chat Box** to instruct the agent to execute complex tasks autonomously.
 
+## 🔌 Providers (bring your own model)
+
+Set `CONFIG.provider` in section 3 and add the matching key in Colab Secrets.
+No provider list is hardcoded — `list_models()` asks the provider.
+
+| id | label | needs key | notes |
+|---|---|---|---|
+| `openrouter` | OpenRouter | `OPENROUTER_API_KEY` | model list is public; chat needs the key |
+| `nvidia` | NVIDIA NIM | `NVIDIA_API_KEY` | |
+| `openai` | OpenAI | `OPENAI_API_KEY` | |
+| `gemini` | Google Gemini | `GEMINI_API_KEY` | OpenAI-compatible surface at `/v1beta/openai/` |
+| `ollama` | Ollama (local) | none | must be running where the notebook runs |
+| `llamacpp` | llama.cpp server | none | start `llama-server` with a GGUF first |
+| `custom` | any endpoint | `CUSTOM_API_KEY` | set `CONFIG.base_url` |
+
+Adding a provider is one row in `PROVIDERS` (section 11) — there is no per-vendor
+adapter class. Every failure raises `ProviderError` with an actionable message
+(401, 403, 404, unreachable, zero models) so the UI can show it verbatim.
+
+### Tests
+
+```
+python tests/test_providers.py
+```
+
+11 offline checks that extract the provider cell from the notebook and run it
+with stubbed globals — no network, no API keys.
+
 ## 🛡️ Permission Modes
 
 - **Safe (Default):** All actions tagged as `write`, `execute`, `package`, `git`, or `destructive` will pause execution and prompt you for live approval, modification, or denial.
