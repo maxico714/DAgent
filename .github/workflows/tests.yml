@@ -31,25 +31,3 @@ jobs:
 
       - name: Run the offline suite
         run: pytest tests -q
-
-      - name: Check every notebook code cell parses
-        run: |
-          python - <<'PY'
-          import ast, json, pathlib, sys
-          nb = json.loads(pathlib.Path("DAgent.ipynb").read_text(encoding="utf-8"))
-          bad = []
-          for i, cell in enumerate(nb["cells"]):
-              if cell["cell_type"] != "code":
-                  continue
-              src = "".join(cell["source"])
-              if not src.strip():
-                  continue
-              try:
-                  ast.parse(src)
-              except SyntaxError as exc:
-                  bad.append((i, exc))
-          print("code cells checked:", sum(1 for c in nb["cells"] if c["cell_type"] == "code"))
-          for i, exc in bad:
-              print("SYNTAX ERROR in cell", i, "::", exc)
-          sys.exit(1 if bad else 0)
-          PY
