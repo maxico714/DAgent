@@ -55,6 +55,15 @@ Adding a provider is one row in `PROVIDERS` (section 11) — there is no per-ven
 adapter class. Every failure raises `ProviderError` with an actionable message
 (401, 403, 404, unreachable, zero models) so the UI can show it verbatim.
 
+### Chat UI
+
+The chat box (section 13) has a **Provider** dropdown and a **Model** dropdown
+that is filled from the provider's live catalogue on load and on every provider
+change. If a provider cannot list models (no key, offline, unsupported
+endpoint), the error is shown inline and the **Override model id** field still
+lets you type a model name and send. Changing provider or model rebuilds the
+adapter before the next turn — no kernel restart.
+
 ### Tests
 
 ```
