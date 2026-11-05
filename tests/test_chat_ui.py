@@ -128,6 +128,34 @@ def test_missing_key_renders_error_bubble_not_crash():
     assert "error" in joined.lower()
 
 
+def test_capture_turn_is_called_when_the_cell_exists():
+    ns = build_namespace(lambda n: KEYS.get(n))
+    install_get(ns, {})
+    calls = []
+    ns["capture_turn"] = lambda message, events: calls.append((message, list(events)))
+    asyncio.run(ns["_run_chat_turn"]("hi", "safe", "5", "openai", "gpt-4o-mini"))
+    assert calls == [("hi", [])], calls
+
+
+def test_capture_failure_never_breaks_the_chat_turn():
+    ns = build_namespace(lambda n: KEYS.get(n))
+    install_get(ns, {})
+
+    def boom(message, events):
+        raise RuntimeError("disk full")
+
+    ns["capture_turn"] = boom
+    # Must not raise: a capture failure is reported, not fatal.
+    asyncio.run(ns["_run_chat_turn"]("hi", "safe", "5", "openai", "gpt-4o-mini"))
+
+
+def test_chat_works_without_the_capture_cell():
+    ns = build_namespace(lambda n: KEYS.get(n))
+    install_get(ns, {})
+    assert "capture_turn" not in ns
+    asyncio.run(ns["_run_chat_turn"]("hi", "safe", "5", "openai", "gpt-4o-mini"))
+
+
 if __name__ == "__main__":
     failed = 0
     for name, fn in sorted(globals().items()):

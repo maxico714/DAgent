@@ -73,6 +73,63 @@ python tests/test_providers.py
 11 offline checks that extract the provider cell from the notebook and run it
 with stubbed globals — no network, no API keys.
 
+## 🧠 Your data → your model
+
+Three sections, in the order the value arrives. Only the last one needs a GPU.
+
+### 17 — Training data
+
+Every chat turn is appended to `<WORKSPACE>/training_data/turns-YYYY-MM-DD.jsonl`
+(Google Drive, when Drive is mounted), with the task, the final answer, the tools used,
+the provider/model, and whether the turn succeeded. `TRAINING_ENABLED = False` stops it.
+
+Credentials are removed **before** anything reaches disk: nine patterns covering
+OpenAI/OpenRouter/GitHub/Hugging Face/Google/NVIDIA keys, `Bearer` headers and
+`api_key = "..."` assignments. Specific prefixes are matched before the generic `sk-`,
+so an OpenRouter key is never mislabelled as an OpenAI key.
+
+```python
+stats = dataset_stats()                  # how much usable data exists
+export_sft()                             # writes sft-YYYYMMDD.jsonl
+train, val = split_dataset(list_turns()) # deterministic split
+```
+
+### 18 — Personal knowledge (no training)
+
+A small TF-IDF index over your own files. Retrieval at question time, not training.
+
+```python
+index = build_index("/content/drive/MyDrive/notes")
+hits  = search(index, "how do we deploy the API?", k=4)
+print(context_block(hits))               # paste into the prompt
+```
+
+Chunking splits on paragraphs and hard-wraps long ones; the index is plain JSON, so it
+saves and loads without a vector database or an embedding API.
+
+### 19 — Retraining tunnel
+
+| Tier | What it does | Needs | Available today |
+|---|---|---|---|
+| 1 | Retrieval over your files | a folder of notes | yes |
+| 2 | Style pack: your best answers as few-shot examples | 20+ usable turns | yes |
+| 3 | LoRA fine-tune | 200+ usable turns **and** a CUDA GPU | config + script generated |
+
+`tunnel_plan()` reports each tier with its exact blocker (`"3/20 usable turns"`,
+`"no CUDA device visible"`) instead of pretending everything is ready.
+
+Tier 3 is deliberately **not** automated into a button. `lora_train_script()` writes a
+script marked `UNVERIFIED` in its own docstring — it was generated, not executed — and
+`compare_answers(pairs, before, after)` exists so a fine-tune has to prove it helped on
+held-out prompts before anyone trusts it. The metric is ROUGE-L, which is lexical: two
+correct answers in different words score low. Treat it as a smoke detector, not a grade.
+
+```
+python tests/test_training.py
+```
+
+28 offline checks across all three sections.
+
 ## 💾 Local models
 
 Section 15/16 ask for the **download method first**, then show the models — because the
