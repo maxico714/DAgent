@@ -73,6 +73,21 @@ python tests/test_providers.py
 11 offline checks that extract the provider cell from the notebook and run it
 with stubbed globals — no network, no API keys.
 
+## 🖥️ Presentation mode
+
+Section 14 hides every code cell so the notebook reads as an app: only the chat box
+and the outputs stay visible, and a floating **Show code** button brings the editors
+back for the session. It hides whichever editor Colab is using (`.input_area`,
+`.inputarea`, CodeMirror, Monaco) and re-applies itself when Colab re-renders a cell
+after execution, so running a cell does not un-hide it. Nothing is deleted.
+
+```
+python tests/test_presentation.py
+```
+
+7 offline checks, including `node --check` on the injected JavaScript when Node is
+installed.
+
 ## 🛡️ Permission Modes
 
 - **Safe (Default):** All actions tagged as `write`, `execute`, `package`, `git`, or `destructive` will pause execution and prompt you for live approval, modification, or denial.
