@@ -1,5 +1,7 @@
 # DAgent
 
+[![tests](https://github.com/maxico714/DAgent/actions/workflows/tests.yml/badge.svg)](https://github.com/maxico714/DAgent/actions/workflows/tests.yml)
+
 An autonomous, self-contained agentic notebook designed to run seamlessly inside Google Colab (and fallback gracefully in plain Jupyter environments). It features a robust tool registry with permission levels, a stable human-in-the-loop approval interface, and persistent memory.
 
 ## 🚀 Features
