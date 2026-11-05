@@ -73,6 +73,39 @@ python tests/test_providers.py
 11 offline checks that extract the provider cell from the notebook and run it
 with stubbed globals — no network, no API keys.
 
+## 💾 Local models
+
+Section 15/16 ask for the **download method first**, then show the models — because the
+same model has a different reference, size and command per method.
+
+| Method | What it does | Needs |
+|---|---|---|
+| `ollama` | `ollama pull <model>` | Ollama running on the host |
+| `gguf` | downloads one `.gguf` file here, then `llama-server` | llama.cpp built locally |
+| `hf` | full-precision weights for transformers/vLLM/fine-tuning | `huggingface_hub`, token for gated repos |
+
+Seven catalogue entries (Qwen2.5 1.5B/3B/7B, Qwen2.5 Coder 7B, Llama 3.2 1B/3B,
+Gemma 2 2B) with **real file sizes read from the Hugging Face API** and their real
+licences. Two are flagged in the UI: `qwen2.5-3b` carries an `other` licence, and the
+Llama/Gemma repos are gated upstream.
+
+The GGUF downloader is resumable and safe to kill:
+
+- writes to `<file>.part` and renames only when complete, so a killed download never
+  looks finished
+- resumes with a `Range` request; if the server ignores the range it restarts cleanly
+  instead of appending and corrupting the file
+- handles `416` on an already-complete part file, verifies the final size, refuses
+  non-http(s) URLs
+
+```
+python tests/test_local_models.py
+python tests/test_local_ui.py
+```
+
+27 offline checks. The downloader ones run against a real HTTP server on `127.0.0.1`
+and cover fresh download, resume, range-ignoring servers, `416`, and truncation.
+
 ## 🖥️ Presentation mode
 
 Section 14 hides every code cell so the notebook reads as an app: only the chat box
