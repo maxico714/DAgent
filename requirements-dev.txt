@@ -1,0 +1,6 @@
+# Test dependencies only. The notebook itself installs its own runtime deps
+# in section 1 (openai, requests, beautifulsoup4, nest_asyncio).
+#
+# The tests deliberately do not need `openai`: they stub it in sys.modules.
+requests>=2.31
+pytest>=8.0
