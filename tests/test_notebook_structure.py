@@ -13,7 +13,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 CELLS = NB["cells"]
 
 MAGIC_RE = re.compile(r"^\s*(?:![^=]|%%?[A-Za-z])")

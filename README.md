@@ -2,10 +2,20 @@
 
 [![tests](https://github.com/maxico714/DAgent/actions/workflows/tests.yml/badge.svg)](https://github.com/maxico714/DAgent/actions/workflows/tests.yml)
 
-An autonomous, self-contained agentic notebook designed to run seamlessly inside Google Colab (and fallback gracefully in plain Jupyter environments). It features a robust tool registry with permission levels, a stable human-in-the-loop approval interface, and persistent memory.
+An autonomous AI agent with a **one-click Colab interface**: press Run on a
+single cell and the chat app appears — no code to read, no 47 cells to execute.
+Any OpenAI-compatible provider (OpenRouter, OpenAI, Gemini, NVIDIA, custom) or
+a local one (Ollama, llama.cpp), a tool registry with permission levels, a
+stable human-in-the-loop approval UI, Drive-backed memory, and a retraining
+tunnel for your own captured conversations.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maxico714/DAgent/blob/main/DAgent.ipynb)
 
 ## 🚀 Features
 
+- **One click, no visible code.** `DAgent.ipynb` is a 3-cell launcher: it
+  installs what Colab is missing, fetches `dagent_app.py`, and renders the app.
+  The launcher hides itself after running (Show code button brings it back).
 - **Robust Tool Registry:** Fine-grained permissions (`read`, `network`, `write`, `execute`, `package`, `git`, `destructive`).
 - **Colab-Safe Human-in-the-Loop UI:** Replaces fragile `ipywidgets` click bindings with Google Colab's native, stable JS-to-Python RPC bridge (`google.colab.kernel.invokeFunction`). No more broken buttons.
 - **Built-in Toolsets:**
@@ -13,35 +23,49 @@ An autonomous, self-contained agentic notebook designed to run seamlessly inside
   - **Web Integration:** Direct scraping of DuckDuckGo HTML search results and readability fetching.
   - **Execution:** Live shell execution and package manager pip installs.
   - **Git Operations:** Status, diff, log, and commits.
-- **Multi-Provider LLM Adapter:** Built-in adapters supporting OpenRouter (Gemini, etc.) and NVIDIA NIM (DeepSeek models) with robust native tool calling.
-- **Interactive Chat Interface:** Rich HTML/CSS Chat UI appended right inside the notebook, complete with live runtime settings (mode and step constraints).
+- **Multi-Provider LLM Adapter:** One OpenAI-compatible adapter for every
+  provider; model lists are discovered live, never hardcoded.
+- **Interactive Chat Interface:** Provider/Model dropdowns, live runtime
+  settings (mode and step limits), and per-turn tool activity.
 
 ## 📁 Repository Structure
 
-├── DAgent.ipynb # Main Colab interactive notebook └── README.md # Project documentation
+```
+DAgent.ipynb                  # the launcher users open in Colab (3 cells)
+dagent_app.py                 # the whole application, generated - do not hand-edit
+notebooks/DAgent-dev.ipynb    # the 47-cell dev notebook the tests exercise
+tools/assemble_app.py         # dev notebook -> dagent_app.py
+tools/build_launcher.py       # regenerates DAgent.ipynb
+tests/                        # 113 offline checks (pytest tests -q)
+```
 
-
-All execution artifacts, workspace logs, and snapshots are persistently stored under a customizable drive workspace (default: `/content/drive/MyDrive/DAgent`).
+All execution artifacts, workspace logs, snapshots and training data are stored
+under the workspace (Google Drive when mounted: `/content/drive/MyDrive/DAgent`,
+otherwise `/content/DAgent` in Colab).
 
 ## 🛠️ Getting Started
 
-### 1. Requirements
+### Run it (Colab, one click)
 
-Upload this notebook directly to your **Google Colab** environment.
-Ensure you have configured your secrets in the Colab Secrets Panel (🔑 icon on the left panel):
-- `OPENROUTER_API_KEY` (if using OpenRouter)
-- `NVIDIA_API_KEY` (if using NVIDIA integration)
+1. Open the notebook: [colab.research.google.com/github/maxico714/DAgent/blob/main/DAgent.ipynb](https://colab.research.google.com/github/maxico714/DAgent/blob/main/DAgent.ipynb)
+   (or click the badge above).
+2. Press **Run** on the single code cell. It installs `openai`, `requests`,
+   `beautifulsoup4` and `nest_asyncio` (only if missing), fetches the app, and
+   the interface appears below the cell.
+3. Add your key (the app ships **none**): Colab Secrets panel (🔑) → e.g.
+   `OPENROUTER_API_KEY` → *Notebook access*. Or run
+   `os.environ["OPENROUTER_API_KEY"] = "..."` in any cell.
+4. Pick a provider, wait for the model list to load, type a message, **Send**.
 
-### 2. How to Run
-
-1. Run the cells sequentially from top to bottom.
-2. When prompted, perform the **Approval System Smoke Test** to verify that your JS-to-Python callback is functioning.
-3. Scroll to the bottom and use the interactive **DAgent Chat Box** to instruct the agent to execute complex tasks autonomously.
+With Drive mounted (recommended), chat memory, snapshots and `training_data/`
+persist at `/content/drive/MyDrive/DAgent`; without it everything is
+session-only.
 
 ## 🔌 Providers (bring your own model)
 
-Set `CONFIG.provider` in section 3 and add the matching key in Colab Secrets.
-No provider list is hardcoded — `list_models()` asks the provider.
+Pick the provider in the chat UI's **Provider** dropdown and add the matching
+key in Colab Secrets. No provider list is hardcoded — `list_models()` asks the
+provider.
 
 | id | label | needs key | notes |
 |---|---|---|---|
@@ -66,14 +90,20 @@ endpoint), the error is shown inline and the **Override model id** field still
 lets you type a model name and send. Changing provider or model rebuilds the
 adapter before the next turn — no kernel restart.
 
-### Tests
+### Tests and development
 
 ```
-python tests/test_providers.py
+pytest tests -q          # 113 offline checks: providers, agent loop, UI,
+                         # training/RAG/tunnel, launcher and app sync
+python tools/assemble_app.py    # regenerate dagent_app.py from the dev notebook
+python tools/build_launcher.py  # regenerate DAgent.ipynb
 ```
 
-11 offline checks that extract the provider cell from the notebook and run it
-with stubbed globals — no network, no API keys.
+The suite extracts cells from `notebooks/DAgent-dev.ipynb` and runs them with
+stubbed globals — no network, no API keys, no Colab. `test_app.py` re-runs the
+assembler in memory and compares it with the committed `dagent_app.py`, so the
+app can never drift from the tested cells; it also imports the app in a bare
+environment to prove nothing runs at import time that should not.
 
 ## 🧠 Your data → your model
 

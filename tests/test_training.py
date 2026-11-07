@@ -1,6 +1,6 @@
 """Offline checks for sections 17-19: training data, retrieval, retraining tunnel.
 
-Extracts cells 44, 45 and 46 from DAgent.ipynb, executes them in one namespace
+Extracts cells 44, 45 and 46 from notebooks/DAgent-dev.ipynb, executes them in one namespace
 against a temporary workspace, and checks the behaviour. No network, no GPU,
 no Colab.
 
@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 DATA_CELL, RAG_CELL, TUNNEL_CELL = 44, 45, 46
 
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 SOURCES = {i: "".join(NB["cells"][i]["source"]) for i in (DATA_CELL, RAG_CELL, TUNNEL_CELL)}
 
 TMP = tempfile.mkdtemp(prefix="dagent-training-")

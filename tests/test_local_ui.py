@@ -19,7 +19,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 LOGIC_INDEX = 42
 UI_INDEX = 43
 
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 LOGIC_SRC = "".join(NB["cells"][LOGIC_INDEX]["source"])
 UI_SRC = "".join(NB["cells"][UI_INDEX]["source"])
 

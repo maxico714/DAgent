@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Scratch: one-shot scripts and captured output (root only)
+/_*.py
+/_*.txt
+
+# Runtime workspace created by a local run. The real workspace is ~/DAgent
+# or /content/drive/MyDrive/DAgent in Colab.
+/checkpoints/
+/logs/
+/memory/
+/snapshots/
+/training_data/
+
+# dagent_app.py IS tracked on purpose: the Colab launcher fetches it from
+# raw.githubusercontent.com. Never ignore it.

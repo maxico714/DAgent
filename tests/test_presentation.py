@@ -16,7 +16,7 @@ import tempfile
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CELL_INDEX = 41
 
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 SRC = "".join(NB["cells"][CELL_INDEX]["source"])
 
 
@@ -29,7 +29,7 @@ def load_js(in_colab=False):
         "Javascript": lambda code: ("javascript", code),
         "display": lambda obj: shown.append(obj),
     }
-    exec(compile(SRC, "DAgent.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
+    exec(compile(SRC, "DAgent-dev.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
     return ns["_PRESENTATION_JS"], shown, ns
 
 

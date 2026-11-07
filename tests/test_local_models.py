@@ -23,7 +23,7 @@ import requests
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CELL_INDEX = 42
 
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 SRC = "".join(NB["cells"][CELL_INDEX]["source"])
 
 PAYLOAD = bytes(range(256)) * 1024  # 262,144 deterministic bytes
@@ -92,7 +92,7 @@ def load_cell(workspace):
         "WORKSPACE": workspace,
         "CONFIG": types.SimpleNamespace(provider="openrouter", model="x", base_url=""),
     }
-    exec(compile(SRC, "DAgent.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
+    exec(compile(SRC, "DAgent-dev.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
     return ns
 
 

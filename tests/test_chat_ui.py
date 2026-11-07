@@ -1,6 +1,6 @@
 """Offline tests for the notebook chat cell (section 13).
 
-Extracts cells 29 and 37 from DAgent.ipynb, executes them with stubbed globals,
+Extracts cells 29 and 37 from notebooks/DAgent-dev.ipynb, executes them with stubbed globals,
 and checks the provider/model UI wiring. No network, no keys, no Colab.
 """
 import asyncio
@@ -23,7 +23,7 @@ if "openai" not in sys.modules:
     fake_openai.OpenAI = _FakeOpenAI
     sys.modules["openai"] = fake_openai
 
-nb = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+nb = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 PROVIDER_SRC = "".join(nb["cells"][29]["source"])
 CHAT_SRC = "".join(nb["cells"][37]["source"])
 

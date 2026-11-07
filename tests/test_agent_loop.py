@@ -1,6 +1,6 @@
 """Offline tests for the agent loop (section 12).
 
-Extracts cells 29 and 33 from DAgent.ipynb and drives the loop with a scripted
+Extracts cells 29 and 33 from notebooks/DAgent-dev.ipynb and drives the loop with a scripted
 fake LLM and a fake tool executor. No network, no keys, no Colab.
 
 This is the core of the product: everything else is plumbing around it.
@@ -29,7 +29,7 @@ if "openai" not in sys.modules:
     fake_openai.OpenAI = _FakeOpenAI
     sys.modules["openai"] = fake_openai
 
-NB = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+NB = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
 PROVIDER_SRC = "".join(NB["cells"][PROVIDER_INDEX]["source"])
 LOOP_SRC = "".join(NB["cells"][LOOP_INDEX]["source"])
 

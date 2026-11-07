@@ -1,6 +1,6 @@
 """Offline regression tests for the notebook's provider cell (section 11).
 
-The notebook is the product, so the test extracts cell 29 from DAgent.ipynb and
+The notebook is the product, so the test extracts cell 29 from notebooks/DAgent-dev.ipynb and
 executes it with stubbed globals. No network, no real API keys.
 
 Run:  python -m pytest tests -q      (or: python tests/test_providers.py)
@@ -28,10 +28,10 @@ if "openai" not in sys.modules:
 
 
 def load_cell():
-    nb = json.loads((ROOT / "DAgent.ipynb").read_text(encoding="utf-8"))
+    nb = json.loads((ROOT / "notebooks" / "DAgent-dev.ipynb").read_text(encoding="utf-8"))
     src = "".join(nb["cells"][CELL_INDEX]["source"])
     ns = {"__name__": "provider_cell"}
-    exec(compile(src, "DAgent.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
+    exec(compile(src, "DAgent-dev.ipynb:cell%d" % CELL_INDEX, "exec"), ns)
     return ns
 
 
